@@ -12,9 +12,7 @@ window_spec = Window.partitionBy(
     F.col("root_domain"),
     F.col("product_title"),
     F.col("product_name"),
-    F.col("product_identifier"),
-    F.col("eco_friendly"),
-    F.col("energy_efficiency")
+    F.col("product_identifier")
 ).orderBy(
     F.desc(F.size(F.col("materials"))),
     F.desc(F.size(F.col("intended_industries"))),
@@ -45,7 +43,18 @@ product_deduplication_rank = (
 
 # COMMAND ----------
 
-product_deduplication_rank_filtered = product_deduplication_rank.filter(F.col("unique_rank") == 1)
+product_deduplication_rank_final = product_deduplication_rank.filter(F.col("unique_rank") == 1)
+
+# COMMAND ----------
+
+(
+    product_deduplication_rank_final
+    .write
+    .format("delta")
+    .mode("overwrite")
+    .option("overwriteSchema", "true")
+    .saveAsTable("ver_assignments.gold_layer.products")
+)
 
 # COMMAND ----------
 

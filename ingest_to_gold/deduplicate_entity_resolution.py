@@ -11,6 +11,7 @@ entity_resolution = spark.table("ver_assignments.silver_layer.entity_resolution"
 window_spec =  Window.partitionBy(
     F.col("company_name"),
     F.col("main_country_code"),
+    F.col("main_country"),
     F.col("main_region"),
     F.col("main_city_district"),
     F.col("main_city"),
@@ -26,14 +27,6 @@ window_spec =  Window.partitionBy(
 entity_resolution_rank = (
     entity_resolution.withColumn("unique_rank", F.row_number().over(window_spec))
 )
-
-# COMMAND ----------
-
-entity_resolution_rank.count()
-
-# COMMAND ----------
-
-entity_resolution_rank.filter("unique_rank = 1").count()
 
 # COMMAND ----------
 
